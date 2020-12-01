@@ -3,6 +3,7 @@ package sessionmanager
 import (
 	"context"
 	"fmt"
+	dp "github.com/JoaoSilvestre95/go-ipfs-dp"
 	"sync"
 	"testing"
 	"time"
@@ -16,7 +17,7 @@ import (
 	bssim "github.com/ipfs/go-bitswap/internal/sessioninterestmanager"
 	"github.com/ipfs/go-bitswap/internal/testutil"
 
-	blocks "github.com/ipfs/go-block-format"
+	blocks "github.com/JoaoSilvestre95/go-block-format"
 	cid "github.com/ipfs/go-cid"
 	peer "github.com/libp2p/go-libp2p-core/peer"
 )
@@ -29,6 +30,14 @@ type fakeSession struct {
 	pm         *fakeSesPeerManager
 	sm         bssession.SessionManager
 	notif      notifications.PubSub
+}
+
+func (fs *fakeSession) GetBlockWithDataProcessing(ctx context.Context, c cid.Cid, block dp.FunctionCodeBlock) (blocks.Block, error) {
+	panic("implement me")
+}
+
+func (fs *fakeSession) GetBlocksWithDataProcessing(ctx context.Context, m map[cid.Cid]dp.FunctionCodeBlock) (<-chan blocks.Block, error) {
+	panic("implement me")
 }
 
 func (*fakeSession) GetBlock(context.Context, cid.Cid) (blocks.Block, error) {

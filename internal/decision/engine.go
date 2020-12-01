@@ -9,12 +9,12 @@ import (
 
 	"github.com/google/uuid"
 
+	blocks "github.com/JoaoSilvestre95/go-block-format"
+	bstore "github.com/JoaoSilvestre95/go-ipfs-blockstore"
 	bsmsg "github.com/ipfs/go-bitswap/message"
 	pb "github.com/ipfs/go-bitswap/message/pb"
 	wl "github.com/ipfs/go-bitswap/wantlist"
-	blocks "github.com/ipfs/go-block-format"
 	cid "github.com/ipfs/go-cid"
-	bstore "github.com/ipfs/go-ipfs-blockstore"
 	logging "github.com/ipfs/go-log"
 	"github.com/ipfs/go-peertaskqueue"
 	"github.com/ipfs/go-peertaskqueue/peertask"
@@ -163,7 +163,7 @@ type Engine struct {
 
 	sendDontHaves bool
 
-	self                  peer.ID
+	self peer.ID
 }
 
 // NewEngine creates a new block sending engine for the given block store

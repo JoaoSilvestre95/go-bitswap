@@ -3,7 +3,7 @@ package testutil
 import (
 	"testing"
 
-	blocks "github.com/ipfs/go-block-format"
+	blocks "github.com/JoaoSilvestre95/go-block-format"
 )
 
 func TestGenerateBlocksOfSize(t *testing.T) {

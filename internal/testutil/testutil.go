@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"math/rand"
 
+	blocks "github.com/JoaoSilvestre95/go-block-format"
+	blocksutil "github.com/JoaoSilvestre95/go-ipfs-blocksutil"
 	bsmsg "github.com/ipfs/go-bitswap/message"
 	"github.com/ipfs/go-bitswap/wantlist"
-	blocks "github.com/ipfs/go-block-format"
 	cid "github.com/ipfs/go-cid"
-	blocksutil "github.com/ipfs/go-ipfs-blocksutil"
 	peer "github.com/libp2p/go-libp2p-core/peer"
 )
 

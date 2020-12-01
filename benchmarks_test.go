@@ -13,15 +13,15 @@ import (
 	"testing"
 	"time"
 
+	blocks "github.com/JoaoSilvestre95/go-block-format"
 	"github.com/ipfs/go-bitswap/internal/testutil"
-	blocks "github.com/ipfs/go-block-format"
 	protocol "github.com/libp2p/go-libp2p-core/protocol"
 
 	bitswap "github.com/ipfs/go-bitswap"
 	bssession "github.com/ipfs/go-bitswap/internal/session"
+	bsnet "github.com/ipfs/go-bitswap/network"
 	testinstance "github.com/ipfs/go-bitswap/testinstance"
 	tn "github.com/ipfs/go-bitswap/testnet"
-	bsnet "github.com/ipfs/go-bitswap/network"
 	cid "github.com/ipfs/go-cid"
 	delay "github.com/ipfs/go-ipfs-delay"
 	mockrouting "github.com/ipfs/go-ipfs-routing/mock"

@@ -4,12 +4,13 @@ import (
 	"context"
 	"time"
 
+	blocks "github.com/JoaoSilvestre95/go-block-format"
+	dp "github.com/JoaoSilvestre95/go-ipfs-dp"
 	bsbpm "github.com/ipfs/go-bitswap/internal/blockpresencemanager"
 	bsgetter "github.com/ipfs/go-bitswap/internal/getter"
 	notifications "github.com/ipfs/go-bitswap/internal/notifications"
 	bspm "github.com/ipfs/go-bitswap/internal/peermanager"
 	bssim "github.com/ipfs/go-bitswap/internal/sessioninterestmanager"
-	blocks "github.com/ipfs/go-block-format"
 	cid "github.com/ipfs/go-cid"
 	delay "github.com/ipfs/go-ipfs-delay"
 	logging "github.com/ipfs/go-log"
@@ -89,11 +90,20 @@ const (
 	opBroadcast
 	// Wants sent to peers
 	opWantsSent
+	// Wants processed blocks
+	opWantsProcessed
+	// Processed wants sent to peers
+	opWantsProcessedSent
 )
 
 type op struct {
 	op   opType
 	keys []cid.Cid
+}
+
+type opProcessing struct {
+	op                  opType
+	processingFunctions map[cid.Cid]dp.FunctionCodeBlock
 }
 
 // Session holds state for an individual bitswap transfer operation.
@@ -115,8 +125,9 @@ type Session struct {
 	latencyTrkr latencyTracker
 
 	// channels
-	incoming      chan op
-	tickDelayReqs chan time.Duration
+	incoming           chan op
+	incomingProcessing chan opProcessing // Channel to processing block requests
+	tickDelayReqs      chan time.Duration
 
 	// do not touch outside run loop
 	idleTick            *time.Timer
@@ -161,6 +172,7 @@ func New(
 		providerFinder:      providerFinder,
 		sim:                 sim,
 		incoming:            make(chan op, 128),
+		incomingProcessing:  make(chan opProcessing, 128),
 		latencyTrkr:         latencyTracker{},
 		notif:               notif,
 		uuid:                loggables.Uuid("GetBlockRequest"),
@@ -255,6 +267,33 @@ func (s *Session) GetBlocks(ctx context.Context, keys []cid.Cid) (<-chan blocks.
 	)
 }
 
+func (s *Session) GetBlockWithDataProcessing(ctx context.Context, cid cid.Cid, functionCode dp.FunctionCodeBlock) (blocks.Block, error) {
+	return bsgetter.SyncGetProcessedBlock(ctx, cid, functionCode, s.GetBlocksWithDataProcessing)
+}
+
+// GetBlocksWithDataProcessing fetches a set of blocks within the context of this session and
+// returns a channel that found blocks will be returned on. No order is
+// guaranteed on the returned blocks.
+func (s *Session) GetBlocksWithDataProcessing(ctx context.Context, keys map[cid.Cid]dp.FunctionCodeBlock) (<-chan blocks.Block, error) {
+	ctx = logging.ContextWithLoggable(ctx, s.uuid)
+
+	return bsgetter.AsyncGetProcessedBlock(ctx, s.ctx, keys, s.notif,
+		func(ctx context.Context, keys map[cid.Cid]dp.FunctionCodeBlock) {
+			select {
+			case s.incomingProcessing <- opProcessing{op: opWantsProcessed, processingFunctions: keys}:
+			case <-ctx.Done():
+			case <-s.ctx.Done():
+			}
+		},
+		func(keys []cid.Cid) {
+			select {
+			case s.incoming <- op{op: opCancel, keys: keys}:
+			case <-s.ctx.Done():
+			}
+		},
+	)
+}
+
 // SetBaseTickDelay changes the rate at which ticks happen.
 func (s *Session) SetBaseTickDelay(baseTickDelay time.Duration) {
 	select {
@@ -320,6 +359,11 @@ func (s *Session) run(ctx context.Context) {
 				s.broadcast(ctx, oper.keys)
 			default:
 				panic("unhandled operation")
+			}
+		case oper := <-s.incomingProcessing:
+			switch oper.op {
+			case opWantsProcessed:
+
 			}
 		case <-s.idleTick.C:
 			// The session hasn't received blocks for a while, broadcast

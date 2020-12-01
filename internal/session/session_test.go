@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	blocksutil "github.com/JoaoSilvestre95/go-ipfs-blocksutil"
 	bsbpm "github.com/ipfs/go-bitswap/internal/blockpresencemanager"
 	notifications "github.com/ipfs/go-bitswap/internal/notifications"
 	bspm "github.com/ipfs/go-bitswap/internal/peermanager"
@@ -13,7 +14,6 @@ import (
 	bsspm "github.com/ipfs/go-bitswap/internal/sessionpeermanager"
 	"github.com/ipfs/go-bitswap/internal/testutil"
 	cid "github.com/ipfs/go-cid"
-	blocksutil "github.com/ipfs/go-ipfs-blocksutil"
 	delay "github.com/ipfs/go-ipfs-delay"
 	peer "github.com/libp2p/go-libp2p-core/peer"
 )

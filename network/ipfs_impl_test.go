@@ -7,12 +7,12 @@ import (
 	"testing"
 	"time"
 
+	blocksutil "github.com/JoaoSilvestre95/go-ipfs-blocksutil"
 	bsmsg "github.com/ipfs/go-bitswap/message"
 	pb "github.com/ipfs/go-bitswap/message/pb"
 	bsnet "github.com/ipfs/go-bitswap/network"
 	tn "github.com/ipfs/go-bitswap/testnet"
 	ds "github.com/ipfs/go-datastore"
-	blocksutil "github.com/ipfs/go-ipfs-blocksutil"
 	mockrouting "github.com/ipfs/go-ipfs-routing/mock"
 	"github.com/multiformats/go-multistream"
 

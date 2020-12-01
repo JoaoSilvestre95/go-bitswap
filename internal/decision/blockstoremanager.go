@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"sync"
 
-	blocks "github.com/ipfs/go-block-format"
+	blocks "github.com/JoaoSilvestre95/go-block-format"
+	bstore "github.com/JoaoSilvestre95/go-ipfs-blockstore"
 	cid "github.com/ipfs/go-cid"
-	bstore "github.com/ipfs/go-ipfs-blockstore"
 	process "github.com/jbenet/goprocess"
 )
 

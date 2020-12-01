@@ -1,17 +1,18 @@
 module github.com/ipfs/go-bitswap
 
 require (
+	github.com/JoaoSilvestre95/go-block-format v0.0.3
+	github.com/JoaoSilvestre95/go-ipfs-blockstore v1.0.5
+	github.com/JoaoSilvestre95/go-ipfs-blocksutil v0.0.2
+	github.com/JoaoSilvestre95/go-ipfs-dp v0.0.4
+	github.com/JoaoSilvestre95/go-ipfs-exchange-interface v0.0.5
 	github.com/cskr/pubsub v1.0.2
 	github.com/gogo/protobuf v1.3.1
 	github.com/google/uuid v1.1.2
-	github.com/ipfs/go-block-format v0.0.2
 	github.com/ipfs/go-cid v0.0.7
 	github.com/ipfs/go-datastore v0.4.5
 	github.com/ipfs/go-detect-race v0.0.1
-	github.com/ipfs/go-ipfs-blockstore v0.1.4
-	github.com/ipfs/go-ipfs-blocksutil v0.0.1
 	github.com/ipfs/go-ipfs-delay v0.0.1
-	github.com/ipfs/go-ipfs-exchange-interface v0.0.1
 	github.com/ipfs/go-ipfs-routing v0.1.0
 	github.com/ipfs/go-ipfs-util v0.0.2
 	github.com/ipfs/go-log v1.0.4

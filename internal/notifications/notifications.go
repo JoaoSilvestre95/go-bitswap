@@ -4,8 +4,8 @@ import (
 	"context"
 	"sync"
 
+	blocks "github.com/JoaoSilvestre95/go-block-format"
 	pubsub "github.com/cskr/pubsub"
-	blocks "github.com/ipfs/go-block-format"
 	cid "github.com/ipfs/go-cid"
 )
 

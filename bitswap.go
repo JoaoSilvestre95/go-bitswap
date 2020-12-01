@@ -6,12 +6,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	dp "github.com/JoaoSilvestre95/go-ipfs-dp"
 
 	"sync"
 	"time"
 
 	delay "github.com/ipfs/go-ipfs-delay"
 
+	blocks "github.com/JoaoSilvestre95/go-block-format"
+	blockstore "github.com/JoaoSilvestre95/go-ipfs-blockstore"
+	exchange "github.com/JoaoSilvestre95/go-ipfs-exchange-interface"
 	deciface "github.com/ipfs/go-bitswap/decision"
 	bsbpm "github.com/ipfs/go-bitswap/internal/blockpresencemanager"
 	decision "github.com/ipfs/go-bitswap/internal/decision"
@@ -26,10 +30,7 @@ import (
 	bsspm "github.com/ipfs/go-bitswap/internal/sessionpeermanager"
 	bsmsg "github.com/ipfs/go-bitswap/message"
 	bsnet "github.com/ipfs/go-bitswap/network"
-	blocks "github.com/ipfs/go-block-format"
 	cid "github.com/ipfs/go-cid"
-	blockstore "github.com/ipfs/go-ipfs-blockstore"
-	exchange "github.com/ipfs/go-ipfs-exchange-interface"
 	logging "github.com/ipfs/go-log"
 	metrics "github.com/ipfs/go-metrics-interface"
 	process "github.com/jbenet/goprocess"
@@ -183,13 +184,13 @@ func New(parent context.Context, network bsnet.BitSwapNetwork,
 	sm = bssm.New(ctx, sessionFactory, sim, sessionPeerManagerFactory, bpm, pm, notif, network.Self())
 
 	bs := &Bitswap{
-		blockstore:       bstore,
-		network:          network,
-		process:          px,
-		newBlocks:        make(chan cid.Cid, HasBlockBufferSize),
-		provideKeys:      make(chan cid.Cid, provideKeysBufferSize),
-		pm:               pm,
-		pqm:              pqm,
+		blockstore:              bstore,
+		network:                 network,
+		process:                 px,
+		newBlocks:               make(chan cid.Cid, HasBlockBufferSize),
+		provideKeys:             make(chan cid.Cid, provideKeysBufferSize),
+		pm:                      pm,
+		pqm:                     pqm,
 		sm:                      sm,
 		sim:                     sim,
 		notif:                   notif,
@@ -303,6 +304,17 @@ type counters struct {
 	dataSent       uint64
 	dataRecvd      uint64
 	messagesRecvd  uint64
+}
+
+//GetBlockWithDataProcessing Get processed data block
+func (bs *Bitswap) GetBlockWithDataProcessing(ctx context.Context, cid cid.Cid, processFunction dp.FunctionCodeBlock) (blocks.Block, error) {
+	return bsgetter.SyncGetProcessedBlock(ctx, cid, processFunction, bs.GetBlocksWithDataProcessing)
+}
+
+//GetBlockWithDataProcessing Get processed data blocks
+func (bs *Bitswap) GetBlocksWithDataProcessing(ctx context.Context, processFunctions map[cid.Cid]dp.FunctionCodeBlock) (<-chan blocks.Block, error) {
+	session := bs.sm.NewSession(ctx, bs.provSearchDelay, bs.rebroadcastDelay)
+	return session.GetBlocksWithDataProcessing(ctx, processFunctions)
 }
 
 // GetBlock attempts to retrieve a particular block from peers within the
